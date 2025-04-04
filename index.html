@@ -23,23 +23,27 @@
       }
 
       .login-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: #f8f9fa;
+        height: 80vh; /* Full viewport height */
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 0 1rem;
-        box-sizing: border-box;
+        background-color: #f8f9fa; /* Light background */
+        padding: 20px;
       }
 
       .login-card {
         width: 100%;
         max-width: 400px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background: white;
+      }
+
+      .error-banner {
+        width: 100%;
+        max-width: 400px;
       }
 
       body {
@@ -72,9 +76,19 @@
         align-items: center;
         margin-bottom: 1rem;
       }
-      .dropdown-toggle::after {
-        margin-left: 0.5rem;
+      .dropdown-menu {
+        padding: 0; /* Removes extra spacing */
+        min-width: 100%;
+        border: none;
       }
+
+      .dropdown-menu .btn {
+        width: 100%;
+        padding: 8px 12px; /* Matches the Admin button */
+        margin: 0; /* Removes extra spacing */
+        border-radius: 0; /* Ensures a flush design */
+      }
+
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -94,63 +108,96 @@
         max-width: 700px; /* or use width: 50%; */
         min-width: 400px;
       }
+      .banner {
+        background-color: #17a2b8; /* Teal color */
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
     </style>
   </head>
   <body>
     <div id="app" class="container mt-5">
       <!-- Login Page -->
       <div v-if="!loggedIn" class="login-container">
-        <div class="card login-card">
-          <div class="card-header bg-info text-white text-center">
-            <h4><i class="fas fa-car"></i> Login</h4>
+        <!-- Error banner ABOVE login card -->
+        <div
+          v-if="loginError"
+          class="alert alert-danger alert-dismissible fade show error-banner d-flex justify-content-between align-items-center"
+          role="alert"
+        >
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span>{{ loginError }}</span>
           </div>
+          <button
+            type="button"
+            class="close ml-3"
+            @click="loginError = ''"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <!-- Login card -->
+        <div class="card login-card">
           <div class="card-body">
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input
-                v-model="loginForm.username"
-                type="text"
-                id="username"
-                class="form-control"
-              />
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input
-                v-model="loginForm.password"
-                type="password"
-                id="password"
-                class="form-control"
-              />
-            </div>
-            <button class="btn btn-info btn-block" @click="login">Login</button>
+            <h4 class="card-title text-center text-info mb-4">
+              <i class="fas fa-car"></i> Login
+            </h4>
+            <form @submit.prevent="login">
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Username"
+                  v-model="loginForm.username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  v-model="loginForm.password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-info btn-block">
+                Login
+              </button>
+            </form>
           </div>
         </div>
       </div>
-
       <!-- Vehicle List Page -->
       <div v-else>
-        <div
-          class="d-flex justify-content-between align-items-center flex-wrap mb-3"
+        <header
+          class="banner d-flex justify-content-between align-items-center px-4 py-3 mb-3"
         >
-          <h2 class="text-info mb-2 mb-md-0">WestBreeze Tower-C Vehicles</h2>
+          <h4 class="text-white m-0">
+            <i class="fas fa-car"></i> WestBreeze Tower-C Vehicles
+          </h4>
           <div class="dropdown">
             <button
-              class="btn btn-light dropdown-toggle d-flex align-items-center"
+              class="btn btn-light dropdown-toggle"
               type="button"
               data-toggle="dropdown"
             >
-              <i class="fas fa-user-circle mr-2"></i> {{ loginForm.username }}
+              <i class="fas fa-user"></i> Admin
             </button>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#" @click="logout">
-                <i class="fas fa-sign-out-alt mr-2 text-danger"></i> Logout
-              </a>
+            <div class="dropdown-menu">
+              <button class="btn btn-danger text-white w-100" @click="logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
             </div>
           </div>
-        </div>
-
-        <div class="mb-3">
+        </header>
+        <!-- <div class="mb-3">
           <input
             type="text"
             v-model="searchQuery"
@@ -169,6 +216,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="filteredVehicles.length === 0">
+                <td colspan="5" class="text-center text-muted">
+                  No records found
+                </td>
+              </tr>
               <tr v-for="vehicle in paginatedVehicles" :key="vehicle.number">
                 <td>{{ vehicle.number }}</td>
                 <td>{{ vehicle.owner }}</td>
@@ -220,7 +272,105 @@
               </tr>
             </tfoot>
           </table>
+        </div> -->
+        <div class="card shadow-sm mb-4">
+          <div
+            class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+          >
+            <h5 class="mb-0"><i class="fas fa-car"></i> Vehicle Result</h5>
+          </div>
+          <div class="card-body">
+            <!-- Search Box -->
+            <div class="mb-3">
+              <input
+                type="text"
+                v-model="searchQuery"
+                class="form-control w-50"
+                placeholder="Search by vehicle number"
+              />
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th>Vehicle Number</th>
+                    <th>Owner Name</th>
+                    <th>Owner Unit No</th>
+                    <th style="width: 60px; text-align: center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="filteredVehicles.length === 0">
+                    <td colspan="4" class="text-center text-muted">
+                      No records found
+                    </td>
+                  </tr>
+                  <tr
+                    v-for="vehicle in paginatedVehicles"
+                    :key="vehicle.number"
+                  >
+                    <td>{{ vehicle.number }}</td>
+                    <td>{{ vehicle.owner }}</td>
+                    <td>{{ vehicle.house }}</td>
+                    <td class="text-center">
+                      <button
+                        class="btn btn-info btn-sm"
+                        @click="viewDetails(vehicle)"
+                      >
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4">
+                      <div
+                        class="d-flex justify-content-between align-items-center flex-wrap"
+                      >
+                        <div class="d-flex align-items-center">
+                          <span>Rows per page:</span>
+                          <select
+                            v-model="pageSize"
+                            class="form-control form-control-sm ml-2 mr-3"
+                            style="width: 60px"
+                          >
+                            <option v-for="size in [5, 10, 15]" :value="size">
+                              {{ size }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <span class="mr-2"
+                            >{{ startIndex + 1 }} - {{ endIndex }} of {{
+                            filteredVehicles.length }}</span
+                          >
+                          <button
+                            class="btn btn-info btn-sm ml-2"
+                            :disabled="currentPage === 1"
+                            @click="currentPage--"
+                          >
+                            <i class="fas fa-chevron-left"></i>
+                          </button>
+                          <button
+                            class="btn btn-info btn-sm ml-2"
+                            :disabled="currentPage === totalPages"
+                            @click="currentPage++"
+                          >
+                            <i class="fas fa-chevron-right"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
         </div>
+
         <!-- Vehicle Details Modal -->
         <div
           v-if="selectedVehicle"
@@ -292,7 +442,7 @@
             username: "",
             password: "",
           },
-          loginError: false,
+          loginError: "",
           searchQuery: "",
           selectedVehicle: null,
           currentPage: 1,
@@ -379,11 +529,11 @@
         methods: {
           login() {
             const { username, password } = this.loginForm;
-            if (username === "admin" && password === "password") {
+            if (username === "admin" && password === "admin") {
               this.loggedIn = true;
-              this.loginError = false;
+              this.loginError = "";
             } else {
-              this.loginError = true;
+              this.loginError = "Invalid username or password";
             }
           },
           logout() {

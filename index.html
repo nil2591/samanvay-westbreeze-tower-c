@@ -104,8 +104,8 @@
         margin: 0;
       }
       .modal-dialog.modal-lg {
-        max-width: 700px; /* or use width: 50%; */
-        min-width: 400px;
+        max-width: 400px; /* or use width: 50%; */
+        width: 90%;
       }
       .banner {
         background-color: #17a2b8; /* Teal color */
@@ -328,7 +328,7 @@
                   <tr>
                     <td colspan="4">
                       <div
-                        class="d-flex justify-content-end align-items-center flex-wrap"
+                        class="d-flex justify-content-end align-items-center"
                       >
                         <div class="d-flex align-items-center">
                           <span>Rows per page:</span>
@@ -393,24 +393,24 @@
               </div>
               <div class="modal-body">
                 <div class="row mb-2">
-                  <div class="col-5 font-weight-bold text-right">
+                  <div class="col-6 font-weight-bold text-right">
                     Vehicle No:
                   </div>
-                  <div class="col-7 text-left">
+                  <div class="col-6 text-left">
                     {{ selectedVehicle.number }}
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <div class="col-5 font-weight-bold text-right">Owner Name:</div>
-                  <div class="col-7 text-left">{{ selectedVehicle.owner }}</div>
+                  <div class="col-6 font-weight-bold text-right">Owner Name:</div>
+                  <div class="col-6 text-left">{{ selectedVehicle.owner }}</div>
                 </div>
                 <div class="row mb-2">
-                  <div class="col-5 font-weight-bold text-right">Owner Unit No:</div>
-                  <div class="col-7 text-left">{{ selectedVehicle.house }}</div>
+                  <div class="col-6 font-weight-bold text-right">Owner Unit No:</div>
+                  <div class="col-6 text-left">{{ selectedVehicle.house }}</div>
                 </div>
                 <div class="row mb-2">
-                  <div class="col-5 font-weight-bold text-right">Contact:</div>
-                  <div class="col-7 text-left">
+                  <div class="col-6 font-weight-bold text-right">Contact:</div>
+                  <div class="col-6 text-left">
                     {{ selectedVehicle.contact }}
                   </div>
                 </div>
